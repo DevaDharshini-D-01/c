@@ -1,0 +1,132 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX 100
+
+// Structure for Student
+struct Student
+{
+    int rollNo;
+    char name[50];
+    int age;
+    char department[30];
+    float marks;
+};
+
+struct Student students[MAX];
+int count = 0;
+
+// Function Prototypes
+void loadFromFile();
+void saveToFile();
+void addStudent();
+void displayStudents();
+void searchStudent();
+void updateStudent();
+void deleteStudent();
+void sortStudents();
+
+// Load student records from file
+void loadFromFile()
+{
+    FILE *fp = fopen("student.txt", "r");
+
+    if(fp == NULL)
+        return;
+
+    count = 0;
+
+    while(fscanf(fp, "%d %s %d %s %f",
+                 &students[count].rollNo,
+                 students[count].name,
+                 &students[count].age,
+                 students[count].department,
+                 &students[count].marks) == 5)
+    {
+        count++;
+    }
+
+    fclose(fp);
+}
+
+// Save student records to file
+void saveToFile()
+{
+    FILE *fp = fopen("student.txt", "w");
+
+    if(fp == NULL)
+    {
+        printf("Error opening file!\n");
+        return;
+    }
+
+    for(int i = 0; i < count; i++)
+    {
+        fprintf(fp,"%d %s %d %s %.2f\n",
+                students[i].rollNo,
+                students[i].name,
+                students[i].age,
+                students[i].department,
+                students[i].marks);
+    }
+
+    fclose(fp);
+}
+
+// Add Student
+void addStudent()
+{
+    if(count >= MAX)
+    {
+        printf("\nDatabase Full!\n");
+        return;
+    }
+
+    printf("\nEnter Roll Number : ");
+    scanf("%d",&students[count].rollNo);
+
+    printf("Enter Name : ");
+    scanf("%s",students[count].name);
+
+    printf("Enter Age : ");
+    scanf("%d",&students[count].age);
+
+    printf("Enter Department : ");
+    scanf("%s",students[count].department);
+
+    printf("Enter Marks : ");
+    scanf("%f",&students[count].marks);
+
+    count++;
+
+    saveToFile();
+
+    printf("\nStudent Added Successfully!\n");
+}
+
+// Display Students
+void displayStudents()
+{
+    if(count == 0)
+    {
+        printf("\nNo Records Found!\n");
+        return;
+    }
+
+    printf("\n---------------------------------------------------------------\n");
+    printf("Roll\tName\t\tAge\tDepartment\tMarks\n");
+    printf("---------------------------------------------------------------\n");
+
+    for(int i = 0; i < count; i++)
+    {
+        printf("%d\t%-12s\t%d\t%-10s\t%.2f\n",
+               students[i].rollNo,
+               students[i].name,
+               students[i].age,
+               students[i].department,
+               students[i].marks);
+    }
+
+    printf("---------------------------------------------------------------\n");
+}
