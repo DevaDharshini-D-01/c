@@ -1,0 +1,34 @@
+#include <stdio.h>
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+void findSwapped(struct TreeNode* root, struct TreeNode** prev, struct TreeNode** first, struct TreeNode** second) {
+    if (root == NULL) return;
+    findSwapped(root->left, prev, first, second);
+    if (*prev != NULL && root->val < (*prev)->val) {
+        if (*first == NULL) {
+            *first = *prev;
+        }
+        *second = root;
+    }
+        *prev = root;
+    findSwapped(root->right, prev, first, second);
+}
+
+void recoverTree(struct TreeNode* root) {
+    struct TreeNode* prev = NULL;
+    struct TreeNode* first = NULL;
+    struct TreeNode* second = NULL;
+    findSwapped(root, &prev, &first, &second);
+    if (first != NULL && second != NULL) {
+        int temp = first->val;
+        first->val = second->val;
+        second->val = temp;
+    }
+}
