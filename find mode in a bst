@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int currentVal;
+    int currentCount;
+    int maxCount;
+    int modeCount;
+    int* result;
+} ModeTracker;
+
+void processNode(int val, ModeTracker* tracker, int pass) {
+    if (tracker->currentCount == 0 || val == tracker->currentVal) {
+        tracker->currentVal = val;
+        tracker->currentCount++;
+    } else {
+        tracker->currentVal = val;
+        tracker->currentCount = 1;
+    }
+
+    if (pass == 1) {
+        if (tracker->currentCount > tracker->maxCount) {
+            tracker->maxCount = tracker->currentCount;
+        }
+    } else if (pass == 2) {
+        if (tracker->currentCount == tracker->maxCount) {
+            tracker->result[(tracker->modeCount)++] = val;
+        }
+    }
+}
+
+void inorder(struct TreeNode* root, ModeTracker* tracker, int pass) {
+    if (root == NULL) return;
+    inorder(root->left, tracker, pass);
+    processNode(root->val, tracker, pass);
+    inorder(root->right, tracker, pass);
+}
+
+int* findMode(struct TreeNode* root, int* returnSize) {
+    ModeTracker tracker = {0, 0, 0, 0, NULL};
+    
+    inorder(root, &tracker, 1);
+    
+    tracker.currentCount = 0; 
+    tracker.currentVal = 0;  
+    tracker.result = (int*)malloc(10000 * sizeof(int));
+    
+    inorder(root, &tracker, 2);
+    
+    *returnSize = tracker.modeCount;
+    return tracker.result;
+}
