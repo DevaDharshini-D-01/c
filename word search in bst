@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+typedef struct TrieNode {
+    struct TrieNode* children[26];
+    char* word; 
+} TrieNode;
+TrieNode* createNode() {
+    TrieNode* node = (TrieNode*)malloc(sizeof(TrieNode));
+    node->word = NULL;
+    for (int i = 0; i < 26; i++) {
+        node->children[i] = NULL;
+    }
+    return node;
+}
+void insertWord(TrieNode* root, char* word) {
+    TrieNode* curr = root;
+    for (int i = 0; word[i] != '\0'; i++) {
+        int idx = word[i] - 'a';
+        if (!curr->children[idx]) {
+            curr->children[idx] = createNode();
+        }
+        curr = curr->children[idx];
+    }
+    curr->word = word; 
+}
+void dfs(char** board, int r, int c, int maxR, int maxC, TrieNode* currNode, char** result, int* returnSize) {
+    if (r < 0 || r >= maxR || c < 0 || c >= maxC || board[r][c] == '#') return;
+    
+    char ch = board[r][c];
+    int idx = ch - 'a';
+    TrieNode* nextNode = currNode->children[idx];
+    if (!nextNode) return; 
+    if (nextNode->word) {
+        result[*returnSize] = (char*)malloc(strlen(nextNode->word) + 1);
+        strcpy(result[*returnSize], nextNode->word);
+        (*returnSize)++;
+        nextNode->word = NULL; 
+    }
+    board[r][c] = '#';
+    dfs(board, r + 1, c, maxR, maxC, nextNode, result, returnSize);
+    dfs(board, r - 1, c, maxR, maxC, nextNode, result, returnSize);
+    dfs(board, r, c + 1, maxR, maxC, nextNode, result, returnSize);
+    dfs(board, r, c - 1, maxR, maxC, nextNode, result, returnSize);
+    board[r][c] = ch;
+}
+char** findWords(char** board, int boardSize, int* boardColSize, char** words, int wordsSize, int* returnSize) {
+    *returnSize = 0;
+    if (boardSize == 0 || !boardColSize) return NULL;
+    TrieNode* root = createNode();
+    for (int i = 0; i < wordsSize; i++) {
+        insertWord(root, words[i]);
+    }
+    char** result = (char**)malloc(wordsSize * sizeof(char*));
+    int maxR = boardSize;
+    int maxC = boardColSize[0];
+    for (int r = 0; r < maxR; r++) {
+        for (int c = 0; c < maxC; c++) {
+            dfs(board, r, c, maxR, maxC, root, result, returnSize);
+        }
+    }
+    
+    return result;
+}
