@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+typedef struct {
+    struct TreeNode** stack;
+    int top;
+    int capacity;
+} BSTIterator;
+void pushAllLeft(BSTIterator* obj, struct TreeNode* node) {
+    while (node != NULL) {
+        if (obj->top + 1 >= obj->capacity) {
+            obj->capacity *= 2;
+            obj->stack = realloc(obj->stack, obj->capacity * sizeof(struct TreeNode*));
+        }
+        obj->stack[++(obj->top)] = node;
+        node = node->left;
+    }
+}
+BSTIterator* bSTIteratorCreate(struct TreeNode* root) {
+    BSTIterator* obj = (BSTIterator*)malloc(sizeof(BSTIterator));
+    obj->capacity = 1000; 
+    obj->stack = (struct TreeNode**)malloc(obj->capacity * sizeof(struct TreeNode*));
+    obj->top = -1; 
+    pushAllLeft(obj, root);
+    return obj;
+}
+int bSTIteratorNext(BSTIterator* obj) {
+    struct TreeNode* node = obj->stack[(obj->top)--];
+    int result = node->val;
+    if (node->right != NULL) {
+        pushAllLeft(obj, node->right);
+    }
+    
+    return result;
+}
+bool bSTIteratorHasNext(BSTIterator* obj) {
+    return obj->top != -1;
+}
+void bSTIteratorFree(BSTIterator* obj) {
+    free(obj->stack);
+    free(obj);
+}
+
+/**
+ * Your BSTIterator struct will be instantiated and called as such:
+ * BSTIterator* obj = bSTIteratorCreate(root);
+ * int param_1 = bSTIteratorNext(obj);
+ * bool param_2 = bSTIteratorHasNext(obj);
+ * bSTIteratorFree(obj);
+ */
