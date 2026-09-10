@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+typedef struct {
+    int sum;
+    int index;
+} HashEntry;
+
+int getHashIndex(int sum, int size) {
+    int hash = sum % size;
+    if (hash < 0) {
+        hash += size;
+    }
+    return hash;
+}
+
+int findMaxLength(int* nums, int numsSize) {
+    int maxLen = 0;
+    int currentSum = 0;
+    
+    int tableSize = numsSize * 2 + 1;
+    HashEntry* hashTable = (HashEntry*)malloc(tableSize * sizeof(HashEntry));
+    
+    for (int i = 0; i < tableSize; i++) {
+        hashTable[i].index = -2;
+    }
+        int baseHash = getHashIndex(0, tableSize);
+    hashTable[baseHash].sum = 0;
+    hashTable[baseHash].index = -1;
+    
+    for (int i = 0; i < numsSize; i++) {
+        currentSum += (nums[i] == 1) ? 1 : -1;
+        
+        int hashIdx = getHashIndex(currentSum, tableSize);
+                while (hashTable[hashIdx].index != -2 && hashTable[hashIdx].sum != currentSum) {
+            hashIdx = (hashIdx + 1) % tableSize;
+        }
+                if (hashTable[hashIdx].index != -2) {
+            maxLen = MAX(maxLen, i - hashTable[hashIdx].index);
+        } else {
+            hashTable[hashIdx].sum = currentSum;
+            hashTable[hashIdx].index = i;
+        }
+    }
+    
+    free(hashTable);
+    return maxLen;
+}
