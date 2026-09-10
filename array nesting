@@ -1,0 +1,25 @@
+#include <stdio.h>
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+int arrayNesting(int* nums, int numsSize) {
+    int maxCycleLen = 0;
+    
+    for (int i = 0; i < numsSize; i++) {
+        if (nums[i] != -1) {
+            int currentLength = 0;
+            int start = i;
+                        while (nums[start] != -1) {
+                int nextIndex = nums[start];
+                nums[start] = -1; 
+                
+                start = nextIndex;
+                currentLength++;
+            }
+            
+            maxCycleLen = MAX(maxCycleLen, currentLength);
+        }
+    }
+    
+    return maxCycleLen;
+}
