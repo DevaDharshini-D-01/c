@@ -1,0 +1,23 @@
+#include <stdbool.h>
+
+bool isMonotonic(int* nums, int numsSize) {
+    if (numsSize <= 2) {
+        return true;
+    }
+    
+    bool isIncreasing = true;
+    bool isDecreasing = true;
+    
+    for (int i = 1; i < numsSize; i++) {
+        if (nums[i] < nums[i - 1]) {
+            isIncreasing = false; 
+        }
+        if (nums[i] > nums[i - 1]) {
+            isDecreasing = false;
+        }
+                if (!isIncreasing && !isDecreasing) {
+            return false;
+        }
+    }
+        return isIncreasing || isDecreasing;
+}
