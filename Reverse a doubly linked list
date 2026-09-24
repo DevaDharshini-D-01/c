@@ -1,0 +1,124 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// 1. Structure Definitions for pure C
+typedef struct DoublyLinkedListNode DoublyLinkedListNode;
+typedef struct DoublyLinkedList DoublyLinkedList;
+
+struct DoublyLinkedListNode {
+    int data;
+    DoublyLinkedListNode* next;
+    DoublyLinkedListNode* prev;
+};
+
+struct DoublyLinkedList {
+    DoublyLinkedListNode* head;
+    DoublyLinkedListNode* tail;
+};
+
+// 2. Helper to create a node in C
+DoublyLinkedListNode* create_doubly_linked_list_node(int node_data) {
+    DoublyLinkedListNode* node = (DoublyLinkedListNode*)malloc(sizeof(DoublyLinkedListNode));
+    node->data = node_data;
+    node->next = NULL;
+    node->prev = NULL;
+    return node;
+}
+
+// 3. Helper to insert a node at the tail
+void insert_node(DoublyLinkedList** doubly_linked_list, int node_data) {
+    DoublyLinkedListNode* node = create_doubly_linked_list_node(node_data);
+
+    if (!(*doubly_linked_list)->head) {
+        (*doubly_linked_list)->head = node;
+    } else {
+        (*doubly_linked_list)->tail->next = node;
+        node->prev = (*doubly_linked_list)->tail;
+    }
+
+    (*doubly_linked_list)->tail = node;
+}
+
+// 4. Helper to print the list
+void print_doubly_linked_list(DoublyLinkedListNode* node, char* sep) {
+    while (node) {
+        printf("%d", node->data);
+        node = node->next;
+        if (node) {
+            printf("%s", sep);
+        }
+    }
+}
+
+// 5. Helper to clear the heap memory
+void free_doubly_linked_list(DoublyLinkedListNode* node) {
+    while (node) {
+        DoublyLinkedListNode* temp = node;
+        node = node->next;
+        free(temp);
+    }
+}
+
+/*
+ * Complete the 'reverse' function below.
+ */
+DoublyLinkedListNode* reverse(DoublyLinkedListNode* llist) {
+    // Return immediately if the list is empty or has only one node
+    if (llist == NULL || llist->next == NULL) {
+        return llist;
+    }
+
+    DoublyLinkedListNode* current = llist;
+    DoublyLinkedListNode* tempPrev = NULL;
+
+    // Traverse the list and swap the pointers for each node
+    while (current != NULL) {
+        // Swap next and prev pointers
+        tempPrev = current->prev;
+        current->prev = current->next;
+        current->next = tempPrev;
+
+        // Move to the next node in the original order 
+        // (which is now stored in current->prev due to the swap)
+        current = current->prev;
+    }
+
+    // tempPrev points to the old second-to-last node, 
+    // so its new 'next' pointer (old 'prev') will give us the new head.
+    return tempPrev->prev;
+}
+
+int main() {
+    int t;
+    if (scanf("%d", &t) != 1) return 0;
+
+    for (int t_itr = 0; t_itr < t; t_itr++) {
+        DoublyLinkedList* llist = (DoublyLinkedList*)malloc(sizeof(DoublyLinkedList));
+        llist->head = NULL;
+        llist->tail = NULL;
+
+        int llist_count;
+        if (scanf("%d", &llist_count) != 1) {
+            free(llist);
+            break;
+        }
+
+        for (int i = 0; i < llist_count; i++) {
+            int llist_item;
+            if (scanf("%d", &llist_item) == 1) {
+                insert_node(&llist, llist_item);
+            }
+        }
+
+        DoublyLinkedListNode* llist1 = reverse(llist->head);
+
+        print_doubly_linked_list(llist1, " ");
+        printf("\n");
+
+        free_doubly_linked_list(llist1);
+        free(llist);
+    }
+
+    return 0;
+}
