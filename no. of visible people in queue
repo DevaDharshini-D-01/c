@@ -1,0 +1,22 @@
+int* canSeePersonsCount(int* heights, int heightsSize, int* returnSize) {
+    int* ans = (int*)malloc(sizeof(int) * heightsSize);
+    memset(ans, 0, sizeof(int) * heightsSize);
+    
+    int* stack = (int*)malloc(sizeof(int) * heightsSize);
+    int top = 0;
+    
+    for (int j = heightsSize - 1; j >= 0; j--) {
+        while (top > 0 && heights[j] > heights[stack[top - 1]]) {
+            ans[j]++;
+            top--;
+        }
+        if (top > 0) {
+            ans[j]++;
+        }
+        stack[top++] = j;
+    }
+    
+    free(stack);
+    *returnSize = heightsSize;
+    return ans;
+}
