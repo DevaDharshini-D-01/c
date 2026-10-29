@@ -1,0 +1,70 @@
+#include <stdlib.h>
+#include <limits.h>
+
+#define MAX_SIZE 30000
+
+typedef struct {
+    int* data;
+    int* minData;
+    int topIndex;
+} MinStack;
+
+MinStack* minStackCreate() {
+    MinStack* stack = (MinStack*)malloc(sizeof(MinStack));
+    stack->data = (int*)malloc(sizeof(int) * MAX_SIZE);
+    stack->minData = (int*)malloc(sizeof(int) * MAX_SIZE);
+    stack->topIndex = -1;
+    return stack;
+}
+
+void minStackPush(MinStack* obj, int value) {
+    if (obj->topIndex >= MAX_SIZE - 1) {
+        return; // Stack overflow
+    }
+    
+    obj->topIndex++;
+    obj->data[obj->topIndex] = value;
+    
+    if (obj->topIndex == 0) {
+        obj->minData[obj->topIndex] = value;
+    } else {
+        int currentMin = obj->minData[obj->topIndex - 1];
+        obj->minData[obj->topIndex] = (value < currentMin) ? value : currentMin;
+    }
+}
+
+void minStackPop(MinStack* obj) {
+    if (obj->topIndex == -1) {
+        return; // Stack underflow
+    }
+    obj->topIndex--;
+}
+
+int minStackTop(MinStack* obj) {
+    return obj->data[obj->topIndex];
+}
+
+int minStackGetMin(MinStack* obj) {
+    return obj->minData[obj->topIndex];
+}
+
+void minStackFree(MinStack* obj) {
+    free(obj->data);
+    free(obj->minData);
+    free(obj);
+}
+
+
+/**
+ * Your MinStack struct will be instantiated and called as such:
+ * MinStack* obj = minStackCreate();
+ * minStackPush(obj, value);
+ 
+ * minStackPop(obj);
+ 
+ * int param_3 = minStackTop(obj);
+ 
+ * int param_4 = minStackGetMin(obj);
+ 
+ * minStackFree(obj);
+*/
